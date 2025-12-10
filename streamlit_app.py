@@ -71,8 +71,8 @@ with st.form("aimcr_form"):
     st.subheader("Reviewer & Project Information")
     col1, col2 = st.columns(2)
     with col1:
-        reviewer_name = st.text_input("Reviewer Name *", placeholder="John Doe")
-        reviewer_email = st.text_input("Reviewer Email *", placeholder="john@kaust.edu.sa")
+        reviewer_name = st.text_input("Reviewer Name *", value="Mohsin Ahmed Shaikh")
+        reviewer_email = st.text_input("Reviewer Email *", value="mohsin.shaikh@kaust.edu.sa")
     with col2:
         project_name = st.text_input("Project Name *")
         project_id = st.text_input("Project ID *")
