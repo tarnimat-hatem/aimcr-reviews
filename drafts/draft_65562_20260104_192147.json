@@ -1,0 +1,123 @@
+{
+  "metadata": {
+    "proposal_title": "Self-Supervised Foundational Model for Chemistry and Materials Science",
+    "principal_investigator": "Bernard",
+    "proposal_date": "2025-12-04",
+    "reviewer_name": "Mohsin Ahmed Shaikh",
+    "reviewer_id": "174988",
+    "aimcr_date": "2026-01-04",
+    "project_id": "65562"
+  },
+  "third_party_software": [
+    {
+      "name": "Pytorch, Torchvision, Torchaudio",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "Aligns with the proposal objectives. Aligns with the approved research topic Datascience and engineering"
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation of PyTorch."
+        },
+        {
+          "name": "Restricted Entities Screening (LC 2.5)",
+          "score": 1,
+          "notes": "Originally developed by Meta and now governed by Linux Foundation. "
+        },
+        {
+          "name": "Source / Provenance",
+          "score": 1,
+          "notes": "https://github.com/pytorch/pytorch/edit/main/docs/source/index.md\nAs of Jan 4th, 2025\n96300 stars\n26400 forks\n12 Github projects\n17000 PRs\n97745 commits\nlast commit 10 hours ago \n\n\n\n"
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "KSL will provide NGC container for the requested version of PyTorch. \nnvcr.io/nvidia/pytorch:25.12-py3\n\nNVIDIA Deep Learning Container License\nPermissions:\n- Install and Use\n- Deploy as a Service\n- Create Derived Containers\n- Open Source Development\nRestrictions:\n- No Reverse Engineering\n- No Standalone Distribution: may not distribute or sublicense the CONTAINER as a stand-alone product\n- No Circumventing Security"
+        },
+        {
+          "name": "Bundled Tools / Dependencies",
+          "score": 1,
+          "notes": "nvcr.io/nvidia/pytorch:25.12-py3 contains\n\nCUDA\ncuBLAS\nNVIDIA cuDNN\nNVIDIA NCCL (optimized for NVLink)\nNVIDIA Data Loading Library (DALI)\nTensorRT\nTorch-TensorRT"
+        }
+      ]
+    },
+    {
+      "name": "PyTorch Geometric",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "This is a library to program and train graph neural networks. The proposal mentions training GNNs as an objective. Aligns with the approved research topic Datascience and engineering"
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation of PyTorch."
+        },
+        {
+          "name": "Restricted Entities Screening (LC 2.5)",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Source / Provenance",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Bundled Tools / Dependencies",
+          "score": 1,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "PyTorch Geometric",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "This is a library to program and train graph neural networks. The proposal mentions training GNNs as an objective. Aligns with the approved research topic Datascience and engineering. \nKSL will provide the Pyg container image from NVIDIA and update with required software."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation of PyG."
+        },
+        {
+          "name": "Restricted Entities Screening (LC 2.5)",
+          "score": 1,
+          "notes": "NVIDIA is entities from non D5 countries "
+        },
+        {
+          "name": "Source / Provenance",
+          "score": 1,
+          "notes": "NVIDIA container image: https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pyg?version=25.11-py3"
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "PyG is distributed under MIT License and is permissive to allow:\n- Commercial use\n- Modification\n- Distribution\n- Private use\n- Sublicensing"
+        },
+        {
+          "name": "Bundled Tools / Dependencies",
+          "score": 1,
+          "notes": "The container image includes:\nCUDA\ncuBLAS\nNVIDIA cuDNN\nNVIDIA NCCL (optimized for NVLink)\nRAPIDS\nNVIDIA Data Loading Library (DALI)\nTensorRT\nTorch-TensorRT"
+        }
+      ]
+    }
+  ],
+  "source_code": [],
+  "datasets_user_files": [],
+  "models": [],
+  "observations": "",
+  "recommendation": ""
+}
