@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "proposal_title": "",
+    "principal_investigator": "",
+    "proposal_date": "2026-01-08",
+    "reviewer_name": "",
+    "reviewer_id": "",
+    "aimcr_date": "2026-01-08",
+    "project_id": ""
+  },
+  "third_party_software": [],
+  "source_code": [],
+  "datasets_user_files": [
+    {
+      "name": "FineWeb-Edu",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "Aligned with the approved research topic (the only dataset mentioned)"
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of the prohibited use/functionality."
+        },
+        {
+          "name": "Restricted Entities Screening (LC 2.5)",
+          "score": 1,
+          "notes": "The requested software is from Non-D5 organizations."
+        },
+        {
+          "name": "Prompts / Fine-tuning Scripts",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Provenance",
+          "score": 1,
+          "notes": "HuggingFace and Common Crawl both in The United States"
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "ODC-BY  allows the intended use."
+        }
+      ]
+    }
+  ],
+  "models": [],
+  "observations": "",
+  "recommendation": ""
+}
