@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "proposal_title": "",
+    "principal_investigator": "Richtarik",
+    "proposal_date": "2026-01-18",
+    "reviewer_name": "Mohsin Ahmed Shaikh",
+    "reviewer_id": "174988",
+    "aimcr_date": "2026-01-18",
+    "project_id": "65625"
+  },
+  "third_party_software": [],
+  "source_code": [],
+  "datasets_user_files": [],
+  "models": [
+    {
+      "name": "nanoGPT",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "Used to benchmark Muon and its variants against Adam/AdamW under identical conditions. NanoGPT serves as the experimental testbed that makes rigorous, large-scale optimizer comparisons computationally feasible before moving to billion-parameter models."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "I do not see mentions or implied use cases involving military, weapons, surveillance, ..."
+        },
+        {
+          "name": "Source / Provenance & Restricted Entities (LC 2.5)",
+          "score": 1,
+          "notes": "The GitHub repo owner is https://github.com/karpathy, located in Stanford (USA - non-D5 country), the repo (https://github.com/karpathy/nanoGPT) has 52.1k stars, 8.8k forks, is actively maintained with 210 commits, last commit being made on Nov, 2025"
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "MIT License permits to use the software for any purpose (research, commercial, private), modify, merge, publish, distribute, sublicense, or sell it. In condition to include the copyright notice and license text in copies or substantial portions."
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": "NanoGPT is a training codebase, not a released pretrained model."
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": "NanoGPT is a training codebase, not a released pretrained model."
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "There's 3 variations to the model:\nNanoGPT with 124M params and 5B tokens  \u22483.72\u00d710e18 FLOPs\nMediumGPT with 350M params and 14B tokens \u22482.94\u00d710e19 FLOPs\nLargeGPT with 774M params  and 31B tokens \u22481.44\u00d710e20 FLOPs\n\nTotal flops:\n\nHyperparameter tuning (2250 run for each model):  2250 * (3.72e18+2.94e19+1.4396e20)\u22483.98\u00d710e23 FLOPs\nNorm/radius ablation: 46,656 NanoGPT runs: 46656 * 3.72e18\u22481.74\u00d710e23 FLOPs\n\nTOTAL: \u22485.72\u00d710e23 FLOPs"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": "Skipped Inspection"
+        }
+      ],
+      "is_proprietary": true
+    }
+  ],
+  "observations": "",
+  "recommendation": ""
+}
