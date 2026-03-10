@@ -1,0 +1,711 @@
+{
+  "metadata": {
+    "proposal_title": "Single-Cell Informed Pathology Image Interpretation and Report Generation via Large-Scale Multimodal Foundation Models",
+    "principal_investigator": "Prof Xin Gao",
+    "proposal_date": "2025-12-02",
+    "reviewer_name": "Mohsin Ahmed Shaikh",
+    "reviewer_id": "174988",
+    "aimcr_date": "2025-12-12",
+    "project_id": "65461"
+  },
+  "third_party_software": [
+    {
+      "name": "Pytorch 2.8.0",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "PyTorch is aligned with the approved research topic, \"large scale data analysis\", and \"Computational Science and Visualization\" in general. \nThis will be provided as part of PyTorch container image 25.11 from NGC which has pytroch 2.10 among other things. "
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of the prohibited use/functionality. "
+        },
+        {
+          "name": "Restricted Entities Screening (LC 2.5)",
+          "score": 1,
+          "notes": "The requested software is from Non-D5 organizations."
+        },
+        {
+          "name": "Source / Provenance",
+          "score": 1,
+          "notes": "nvcr.io/nvidia/pytorch:25.11-py3"
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "Released under NVIDIA Software LicenseAgreement/Product terms and conditions allows the intended use."
+        },
+        {
+          "name": "Bundled Tools / Dependencies",
+          "score": 1,
+          "notes": "nvcr.io/nvidia/pytorch:25.11-py3 (ubuntu 24.04)\nTotal: 1405 (UNKNOWN: 0, LOW: 98, MEDIUM: 1305, HIGH: 2, CRITICAL: 0)"
+        }
+      ]
+    },
+    {
+      "name": "openslide",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "OpenSlide is a C library that provides a simple interface to read whole-slide images (also known as virtual slides)"
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No prohibited use indicated in the documentation."
+        },
+        {
+          "name": "Restricted Entities Screening (LC 2.5)",
+          "score": 1,
+          "notes": "According to Github: https://github.com/openslide/openslide\nAcknowledgements\nOpenSlide has been developed by Carnegie Mellon University and other contributors.\nOpenSlide has been supported by the National Institutes of Health and the Clinical and Translational Science Institute at the University of Pittsburgh.\n\nIt is not being maintained by multiple contributors on GitHub."
+        },
+        {
+          "name": "Source / Provenance",
+          "score": 1,
+          "notes": "https://github.com/openslide/openslide\nhttps://openslide.org/\nwell maintained, 2700+ commits, last PR accepted on October 28th, 2025, "
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "GPL2 license. Fit for project use."
+        },
+        {
+          "name": "Bundled Tools / Dependencies",
+          "score": 1,
+          "notes": "Dependencies for building OpenSlide:\nGCC or Clang, Meson, cairo \u2265 1.2, glib \u2265 2.56, libdicom \u2265 1.2 (automatically built if missing), libjpeg-turbo \u2265 1.3 or libjpeg \u2265 9c, libpng, libtiff \u2265 4.0, libxml2, OpenJPEG \u2265 2.1, SQLite \u2265 3.14, zlib, Zstandard (by facebook)\n\nmost if not all of the above are provided by Shaheen III GPUP opreating system. The rest will by source built from sources downloaded from corresponding project's websites. \n\nIt highly probably will be provided as a container image by KSL team."
+        }
+      ]
+    },
+    {
+      "name": "Ollama",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "A CLI based runtime for interacting with a catalog of supported LLMs. For the project, it does not look mandatory, but is a more of a convenience  tool. Otherwise, the user will need to load the model in pytorch and run forward pass with inputs provided , for the case of inference, i.e. prompting."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 2,
+          "notes": "The use of Ollama is not confined to one model but a catalog of supported models. Having said this, the project members will not have access to anyother model but the ones requested in the project proposal. Therefore, ollama's use is limited in scope. "
+        },
+        {
+          "name": "Restricted Entities Screening (LC 2.5)",
+          "score": 3,
+          "notes": "Given access to different models, it is capable of curating information about prohibited usecases. "
+        },
+        {
+          "name": "Source / Provenance",
+          "score": 1,
+          "notes": "Dockerhub: ollama/ollama:0.13.3\nRegistry maintained by Ollama.inc\nOwners are Jeffery Morgan (https://www.linkedin.com/in/jmorganca/)\nand Micheal Yang (https://www.linkedin.com/in/mxyng/)"
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "https://github.com/ollama/ollama?tab=MIT-1-ov-file#readme\nLicense permits project's intended use."
+        },
+        {
+          "name": "Bundled Tools / Dependencies",
+          "score": 1,
+          "notes": "ollama/ollama:0.13.3 (ubuntu 24.04)\nTotal: 16 (UNKNOWN: 0, LOW: 10, MEDIUM: 6, HIGH: 0, CRITICAL: 0)\n"
+        }
+      ]
+    }
+  ],
+  "source_code": [],
+  "datasets_user_files": [
+    {
+      "name": "TCGA dataset",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "The dataset is used to train and evaluate pathology\u2013omics multimodal models for cancer representation learning and pathology report generation in the proposed research."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+        },
+        {
+          "name": "D5+M affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "Developed by National Cancer Institute (NCI) and National Human Genome\nIt is an entity from non-D5 country."
+        },
+        {
+          "name": "Prompts / Fine-tuning Scripts",
+          "score": 1,
+          "notes": "no user files provided"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": "https://portal.gdc.cancer.gov/projects/"
+        },
+        {
+          "name": "Provenance",
+          "score": 1,
+          "notes": "Owner / Curator: National Cancer Institute (NCI) and National Human Genome\n\nPrimary Distribution Platform: GDC Data Portal\n\nAccess Method: GDC Data Transfer Tool\n\nGitHub Repo: N/A\n\nProvenance: curated by National Cancer Institute (NCI) and National Human Genome\n\nMaintenance Status: N/A"
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "Data is provided for research use.\nOpen-access portions can be downloaded without controlled-access approval.\nControlled data requires dbGaP authorization and institutional approval.\nUsers must not attempt to re-identify individuals.\nRedistribution must follow NIH Genomic Data Commons data-use policies."
+        }
+      ]
+    },
+    {
+      "name": "CellxGENE dataset",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Restricted Entities Screening (LC 2.5)",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Prompts / Fine-tuning Scripts",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Provenance",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": ""
+        }
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "SpeciesLLM",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "SpeciesLLM is a transformer-based single-cell foundation model trained on large-scale transcriptomic data to learn gene and cell embeddings for biological analysis tasks.\nThe model supports the project objective of building a single-cell foundation model that aligns cellular transcriptomic embeddings with pathology image representations in a unified multimodal latent space."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "The model is developed and maintained by Gao Lab, an in-house research group led by Prof. Xin Gao at King Abdullah University of Science and Technology (KAUST)."
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "Public open-source licensing terms are not explicitly specified in the provided documentation."
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Number of trainable parameters: 500 x 10^6\nNumber of tokens: 9.83 x 10^10 \n\nEstimated FLOPs= 6 x 500 x 10^6 x 9.83 x 10^10  = 2.9490 x 10^20"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": true
+    },
+    {
+      "name": "scGPT (Single-Cell Foundation Model)",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "scGPT is an official generative pre-trained transformer for large-scale single-cell multi-omics that learns cell and gene representations and supports downstream tasks such as annotation, integration, and perturbation prediction.\nIt supports Objective 1 as one of the single-cell foundation models used to provide cell-state embeddings for cross-modal alignment with pathology images."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "scGPT is maintained by Bo Wang Lab at the University of Toronto, LinkedIn profile for Bo Wang: https://www.linkedin.com/in/bo-wang-a6065240/"
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "MIT license.\nCommercial and research use are generally allowed.\nModification and redistribution are allowed with preservation of the license notice."
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": "CELLxGENE release 2023-04-15 with 33M cells, by Chan-Zuckerberg Initiative."
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Number of trainable parameters: 53 M  \nNumber of tokens: 9.12 x 10^10 \n\nEstimated FLOPs= 6 x 53 x 10^6 x 9.12 x 10^10= 2.90016 x 10^19"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": false
+    },
+    {
+      "name": "Geneformer-V2 (Single-Cell Foundation Model)",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "Geneformer is a transformer foundation model pretrained on large-scale human single-cell transcriptomes to make context-aware predictions and reusable cell embeddings for network biology tasks.\nIt supports Objective 1 by serving as a single-cell embedding model for the unified multimodal latent space."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "https://huggingface.co/ctheodoris/Geneformer (2465 downloads, 243 commits, last commit Feb 2026)\nOwner: Geneformer is maintained by Christina Theodoris / Theodoris Lab, with affiliation shown through the Gladstone/UCSF ecosystem, LinkedIn profile for Christina Theodoris: https://www.linkedin.com/in/christina-theodoris-a77093245/?utm_source=chatgpt.com"
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "Apache 2.0 license.\nCommercial and research use are allowed.\nModification and redistribution are allowed with preservation of notices and license terms.\nThe license includes an express patent grant"
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": "Genecorpus-30M for V1 and ~104M non-cancer human single-cell transcriptomes for V2, by Theodoris Lab."
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Number of trainable parameters: 316x10^6\nNumber of tokens: 4.67x10^11 \n\nEstimated FLOPs= 6 x 316x10^6 x 4.67x10^11 = 8.854 x 10^24"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": false
+    },
+    {
+      "name": "H-optimus / HIPT",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "H-optimus-0 is an open-source histology foundation model from Bioptimus, built as a 1.1B-parameter vision transformer for extracting features from H&E whole-slide histology images for downstream pathology tasks.\nIt supports Objective 1 on the pathology side by providing WSI image embeddings to align with single-cell and spatial transcriptomic representations."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "https://huggingface.co/bioptimus/H-optimus-0 (25,610 downloads, 14 commits, last commit Dec 2025)\nOwner: Bioptimus, a biotech AI company.\nYou need to agree to share your contact information to access this model."
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "Apache-2.0 license.\nUse, modification, and redistribution are allowed.\nPreservation of license and attribution notices is required."
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": "trained on a Bioptimus proprietary collection."
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Missing information to be able to calculate FLOPS"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": false
+    },
+    {
+      "name": "HE2RNA (Image-to-Transcriptome Integration)",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "HE2RNA is a multiple-instance learning model from Owkin that predicts transcriptomic profiles from H&E pathology slides.\nIt is best treated as a baseline/comparison model for Objective 1, because the proposal explicitly discusses HE2RNA as prior histology-to-expression work that motivates the proposed multimodal alignment approach."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7"
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "https://github.com/owkin/HE2RNA_code (112 stars, 42 forks, 3 commits, last commit 6 years ago)\nmaintained by: Owkin https://www.owkin.com/\nEntity is from non-D5 country.\nThis repository was archived by the owner on Feb 15, 2023. It is now read-only. "
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "GPL-3.0 license.\nUse, modification, and redistribution are allowed under GPL terms.\nDerivative distributions must remain under GPL-compatible terms."
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": "- TCGA (National Cancer Institute  non-D5 country.)\n- 100,000 histological images of human colorectal cancer and healthy tissue (Zenodo -  non-D5 country.)\n- Prostate Epithelium Segmentation (Zenodo -  non-D5 country.)"
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Missing information to be able to calculate FLOPS"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": false
+    },
+    {
+      "name": "Llama 3 / 3.1 (8B, 70B, 405B)",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "Llama 3.1 is Meta\u2019s general-purpose open-weight LLM family for commercial and research use, intended for assistant-like chat and broader natural-language generation tasks.\nIt aligns with Objective 2, where the proposal calls for a medical-report LLM fine-tuned to generate structured pathology reports and biologically grounded explanations."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "Sensitive-use restrictions are explicitly present in Meta\u2019s documentation, including prohibited uses involving military, warfare, nuclear applications, espionage, and guns / illegal weapons."
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "https://huggingface.co/meta-llama (The link provided is for the entire Llama family page)\nMaintained by: Meta Llama non-D5 country.\nGated Access, requires permission."
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "Licensed under the Llama 3.1 Community License.\nCommercial and research use are allowed subject to the license and Acceptable Use Policy.\nFine-tuning and synthetic-data / distillation use are allowed.\nUse must comply with the Acceptable Use Policy, including the prohibited-use categories above."
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Missing information to be able to calculate FLOPS"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": false
+    },
+    {
+      "name": "DeepSeek-V3.2 ",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "DeepSeek-V3.2 is a high-performance reasoning and agentic LLM that emphasizes efficient long-context inference and strong post-training reasoning performance.\nIt is not explicitly named in the proposal"
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "https://huggingface.co/deepseek-ai/DeepSeek-V3.2 (341,807  downloads, 7 commits,  last commit Dec 2025)\nMaintained by: DeepSeek-AI / DeepSeek\n The entity is from a D5 country."
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "MIT license.\nCommercial and research use are generally allowed.\nModification and redistribution are allowed with preservation of the license notice."
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": "The public model doesn't provide clear training-data provenance section, so the pretraining corpus is insufficiently documented from the accessible model card alone."
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Number of trainable parameters: 685 x 10^9 \nNumber of tokens:  not mentioned\n\nEstimated FLOPs= Missing information to be able to calculate FLOPS"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": false
+    },
+    {
+      "name": "Qwen  ",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "Qwen2.5-VL is a multimodal vision-language model family from Alibaba that processes text and images and is optimized for document, OCR, chart, and video understanding.\nIt is not explicitly named in the proposal."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7"
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct  \nhttps://huggingface.co/Qwen/Qwen2.5-VL-72B-Instruct  \nhttps://huggingface.co/Qwen/Qwen3-VL-235B-A22B-Thinking  \n\nMaintained by: Alibaba Cloud / Qwen team.\nThe entity is from a D5 country"
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "Apache-2.0 for the cited Qwen2.5-VL-7B-Instruct model page.\nCommercial and research use are generally allowed under Apache-2.0.\nModification and redistribution are allowed with preservation of notices and license text.\n"
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": "The public model doesn't provide clear training-data provenance section, so the pretraining corpus is insufficiently documented from the accessible model card alone."
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Missing information to be able to calculate FLOPS"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": false
+    },
+    {
+      "name": "Mixtral 8x22B ",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "Mixtral 8x22B is Mistral AI\u2019s sparse Mixture-of-Experts LLM, using 39B active parameters out of 141B total for efficient high-performance generation.\nIt is not explicitly named in the proposal."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "https://mistral.ai/news/mixtral-8x22b/\nMaintained by: MistralAI\nThe entity is from a non-D5 country."
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "Apache-2.0 license metadata is shown for the Hugging Face model card.\nCommercial and research use are generally allowed.\nModification and redistribution are allowed with preservation of notices and license text"
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": "It is not explicitly named."
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Missing information to be able to calculate FLOPS"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": false
+    },
+    {
+      "name": "InternVL 2.5",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "InternVL2.5 is an open-source multimodal large language model series from OpenGVLab that combines a vision encoder and language model for strong image-text reasoning.\nIt is not explicitly named in the uploaded proposal"
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "https://github.com/OpenGVLab/InternVL (9.9k stars, 764 forks, 261 commits, last commit Sep 2025)\nMaintained by: OpenGVLab https://github.com/OpenGVLab/\nThe entity is from a D5 country."
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "MIT license for the InternVL codebase.\nThe InternVL2.5 model card also states MIT, but notes dependency on Qwen License for the embedded Qwen component.\nUse, modification, and redistribution are allowed subject to the MIT terms and any component-model license obligations."
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": "The public model doesn't provide clear training-data provenance section."
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Missing information to be able to calculate FLOPS"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": false
+    },
+    {
+      "name": "TRIDENT ",
+      "checks": [
+        {
+          "name": "Project & Usage Alignment",
+          "score": 1,
+          "notes": "TRIDENT is a scalable Mahmood Lab toolkit for whole-slide image processing that performs tissue segmentation, patch extraction, and large-scale patch-feature extraction from many pathology foundation models.\nIt supports Objective 1 as the WSI preprocessing / feature-extraction backbone needed to prepare pathology image embeddings for multimodal alignment."
+        },
+        {
+          "name": "Prohibited Use Screening (LC 2.7)",
+          "score": 1,
+          "notes": "No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+        },
+        {
+          "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+          "score": 1,
+          "notes": "https://github.com/mahmoodlab/TRIDENT(496 stars, 109 forks, 227 commits, last commit March 2026)\nMaintained by: TRIDENT is developed by Mahmood Lab at Harvard Medical School and Brigham and Women\u2019s Hospital.\nThe entity is from a non-D5 country.\nGated access: accept agreement."
+        },
+        {
+          "name": "License / Permissions",
+          "score": 1,
+          "notes": "CC-BY-NC-ND 4.0.\nNon-commercial academic research use is allowed with attribution.\nCommercial use, sale, or monetization requires prior approval.\nPretrained encoders used through TRIDENT remain subject to their own model licenses"
+        },
+        {
+          "name": "Training Data Documentation",
+          "score": 1,
+          "notes": "-UNI: Mass-100K, sourced from private histology collections (BWH / MGH), in addition to slides from the public GTEx consortium."
+        },
+        {
+          "name": "Customisation / Fine-tuning",
+          "score": 1,
+          "notes": ""
+        },
+        {
+          "name": "FLOPS Calculation",
+          "score": 1,
+          "notes": "Missing information to be able to calculate FLOPS"
+        },
+        {
+          "name": "Sample Inspection",
+          "score": 1,
+          "notes": ""
+        }
+      ],
+      "is_proprietary": false
+    }
+  ],
+  "observations": "",
+  "recommendation": ""
+}
