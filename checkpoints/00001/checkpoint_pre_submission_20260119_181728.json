@@ -1,0 +1,184 @@
+{
+  "checkpoint_metadata": {
+    "type": "pre_submission",
+    "timestamp": "2026-01-19T18:17:28.744425",
+    "project_id": "00001"
+  },
+  "form_data": {
+    "metadata": {
+      "proposal_title": "Title of the project",
+      "principal_investigator": "",
+      "proposal_date": "2026-01-19",
+      "reviewer_name": "",
+      "reviewer_id": "",
+      "aimcr_date": "2026-01-19",
+      "project_id": "00001"
+    },
+    "third_party_software": [
+      {
+        "name": "Software 1",
+        "checks": [
+          {
+            "name": "Project & Usage Alignment",
+            "score": 1,
+            "notes": "What does the software do?\nWhich research goal does the software aligns with?\nWhich \"Approved Research Topic\" the software aligns with?"
+          },
+          {
+            "name": "Prohibited Use Screening (LC 2.7)",
+            "score": 1,
+            "notes": "Check the software documentation for the presence of sensitive terms like \"military\", \"weapons\" and \"nuclear\" etc and or inferring terms or use cases. If no mention is found the response will be:\n No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+          },
+          {
+            "name": "D5+M affiliation Screening (LC 2.5)",
+            "score": 1,
+            "notes": "Check the developer or maintainer for D5+M affiliation\n"
+          },
+          {
+            "name": "Source / Provenance",
+            "score": 1,
+            "notes": "Source repository statistics, maintainer, active or inactive etc"
+          },
+          {
+            "name": "License / Permissions",
+            "score": 1,
+            "notes": "License type, permissions and restrictions"
+          },
+          {
+            "name": "Bundled Tools / Dependencies",
+            "score": 1,
+            "notes": "Dependencies (pip, conda or container image installation)"
+          }
+        ]
+      }
+    ],
+    "source_code": [
+      {
+        "name": "",
+        "checks": [
+          {
+            "name": "Project & Usage Alignment",
+            "score": 1,
+            "notes": "What does the software do? \nWhich research goal does the software aligns with? \nWhich \"Approved Research Topic\" the software aligns with?"
+          },
+          {
+            "name": "Prohibited Use Screening (LC 2.7)",
+            "score": 1,
+            "notes": "Check the software documentation for the presence of sensitive terms like \"military\", \"weapons\" and \"nuclear\" etc and or inferring terms or use cases. \n\nIf no mention is found, the response will be: No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+          },
+          {
+            "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+            "score": 1,
+            "notes": "Source URL\n\nCheck the developer or maintainer for D5+M affiliation"
+          },
+          {
+            "name": "License / Permissions",
+            "score": 1,
+            "notes": "License type, permissions and restrictions"
+          },
+          {
+            "name": "Dependencies / Bundled Components",
+            "score": 1,
+            "notes": "Dependencies, either pre-installed on Shaheen III GPUP or brought in with the source."
+          },
+          {
+            "name": "Sample Inspection",
+            "score": 1,
+            "notes": "Checked the source files for the presence of sensitive terms like \"military\", \"weapons\" and \"nuclear\" etc and or inferring terms or use cases. \n\nIf no mention is found, the response will be: No mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7.\n\nSkipped if  risk is low for provenance, project & usage alignment"
+          }
+        ]
+      }
+    ],
+    "datasets_user_files": [
+      {
+        "name": "Dataset 1",
+        "checks": [
+          {
+            "name": "Project & Usage Alignment",
+            "score": 1,
+            "notes": "What is the dataset? \nWhich research goal does the dataset align with? \nWhich \"Approved Research Topic\" does the dataset align with?"
+          },
+          {
+            "name": "Prohibited Use Screening (LC 2.7)",
+            "score": 1,
+            "notes": "Check the dataset documentation for the presence of sensitive terms like \"military\", \"weapons\" and \"nuclear\" etc and or inferring terms or use cases.\nIf no mention is found, the response will be: \n\nNo mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+          },
+          {
+            "name": "Restricted Entities Screening (LC 2.5)",
+            "score": 1,
+            "notes": "Check the developer or maintainer for D5+M affiliation."
+          },
+          {
+            "name": "Prompts / Fine-tuning Scripts",
+            "score": 1,
+            "notes": "If user files are provided, scan for the presence of sensitive terms like \"military\", \"weapons\" and \"nuclear\" etc and or inferring terms or use cases."
+          },
+          {
+            "name": "Sample Inspection",
+            "score": 1,
+            "notes": "Load the dataset samples and inspect to check if it has no data related to topics, terms, and visuals of Prohibited Use.  "
+          },
+          {
+            "name": "Provenance",
+            "score": 1,
+            "notes": "Dataset URL:\n\nCheck the source and how active or popular it is.\nCheck who are the developers or maintainers. "
+          },
+          {
+            "name": "License / Permissions",
+            "score": 1,
+            "notes": "License type, permissions, and restrictions. "
+          }
+        ]
+      }
+    ],
+    "models": [
+      {
+        "name": "Model 1",
+        "checks": [
+          {
+            "name": "Project & Usage Alignment",
+            "score": 1,
+            "notes": "What does the model do?\nWhich research objective does it align with?\nWhich approved research topic does it align with?"
+          },
+          {
+            "name": "Prohibited Use Screening (LC 2.7)",
+            "score": 1,
+            "notes": "Check the model documentation for the presence of sensitive terms like \"military\", \"weapons\" and \"nuclear\" etc and or inferring terms or use cases. \n\nIf no mention is found, the response will be: \n\nNo mention of sensitive terms in the documentation classified in Prohibited Use Screening in accordance with LC 2.7."
+          },
+          {
+            "name": "Source / Provenance & D5+M Affiliation Screening (LC 2.5)",
+            "score": 1,
+            "notes": "Model download URL:\n\nModel developer or maintainer, downloads or popularity of the repository, activeness of the repository. "
+          },
+          {
+            "name": "License / Permissions",
+            "score": 1,
+            "notes": "License type, permissions and restrictions."
+          },
+          {
+            "name": "Training Data Documentation",
+            "score": 1,
+            "notes": "Any information about the training data, its tokens and if possible their source URLs. The usual touch points for this are the model cards and published papers where this information is discussed."
+          },
+          {
+            "name": "Customisation / Fine-tuning",
+            "score": 1,
+            "notes": "Check the model card or documentation, or papers for which the model is a published artifact, for the information related to any fine-tuning for the downstream task and is released as the final model.  Check if any downstream tasks align with prohibited use."
+          },
+          {
+            "name": "FLOPS Calculation",
+            "score": 1,
+            "notes": "From the model documentation or model files, when accessible, estimate the number of trainable parameters (N) and the number of samples/tokens (D) in the training datasets used to train the model. Using this information, estimate the total Floating point operations using the Chinchilla scale law 6xNxD.  \n\nIt is not realistic for any model with existing FLOPs accumulated through pre-training to exceed the 10^27 threshold after further training on Shaheen III GPUP"
+          },
+          {
+            "name": "Sample Inspection",
+            "score": 1,
+            "notes": "Check by loading the model and running prompts with sensitive terms to check the responses for information related to prohibited use.\nSkip for models with low risk in provenance and alignment. "
+          }
+        ],
+        "is_proprietary": false
+      }
+    ],
+    "observations": "This section mentions any observation about an artifact, including any missing information.\n\nThe CUMULATIVE RISK LEVEL is the maximum of any artifact from any section. ",
+    "recommendation": "This section spells out the final or conditional recommendation for CEAR team RCAC to consider for making the ultimate decision.  "
+  }
+}

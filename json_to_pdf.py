@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """
-KSL AI Model Control Review → PDF Generator
--Generator
-- Fixed title: "KSL AI Model Control Review"
-- Shows original risk scores (1/2/3/4)
-- Shows Total Risk Score per artifact
-- 100% syntax-error-free
+KSL AI Model Control Review → PDF Generator (v3)
+- Addendum artifacts appear inline within their original section, blue-bordered with date badge
+- Final "Summary" page: Overall Risk Score (Original vs Updated incl. addenda), then a single
+  dated trail of Observations and Recommendation covering the original review and every addendum
 """
 
 import json
@@ -19,148 +17,10 @@ from reportlab.lib.colors import HexColor
 from reportlab.lib import colors
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
-    HRFlowable, PageBreak, KeepTogether
+    HRFlowable, PageBreak
 )
 
-
-def load_json(filepath: str) -> dict:
-    with open(filepath, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
-
-def create_styles():
-    styles = getSampleStyleSheet()
-
-    # Main title
-    styles.add(ParagraphStyle(
-        name='DocTitle',
-        parent=styles['Title'],
-        fontSize=22,
-        spaceAfter=30,
-        textColor=HexColor('#1a365d'),
-        alignment=1,
-        fontName='Helvetica-Bold'
-    ))
-
-    # Section headers
-    styles.add(ParagraphStyle(
-        name='SectionHeader',
-        parent=styles['Heading1'],
-        fontSize=16,
-        spaceBefore=20,
-        spaceAfter=12,
-        textColor=HexColor('#2c5282'),
-        keepWithNext=True
-    ))
-
-    # Per-item header (e.g., "1. pytorch-2.9.1-ngc")
-    styles.add(ParagraphStyle(
-        name='ItemHeader',
-        parent=styles['Heading2'],        # ← Fixed: was missing closing parenthesis!
-        fontSize=13,
-        spaceBefore=18,
-        spaceAfter=8,
-        textColor=HexColor('#3182ce'),
-        keepWithNext=True
-    ))
-
-    # Table text
-    styles.add(ParagraphStyle(
-        name='TableText',
-        parent=styles['Normal'],
-        fontSize=10,
-        leading=12
-    ))
-
-    # Total risk highlight
-    styles.add(ParagraphStyle(
-        name='TotalRisk',
-        parent=styles['Normal'],
-        fontSize=11,
-        fontName='Helvetica-Bold',
-        textColor=HexColor('#b91c1c'),   # red-700
-        spaceBefore=10,
-        spaceAfter=15,
-        leftIndent=5
-    ))
-
-    return styles
-
-
-def calculate_total_risk(checks: list) -> int:
-    total = 0
-    for check in checks:
-        score = check.get("score")
-        if isinstance(score, (int, float)):
-            total += int(score)
-    return total
-
-
-def create_check_table(checks: list, styles) -> Table:
-    data = [["Check", "Risk Score", "Notes"]]
-
-    for check in checks:
-        name = check.get("name", "—")
-        score = check.get("score", "—")
-        notes = (check.get("notes") or "").strip().replace('\n', '<br/>')
-
-        score_display = f"<b>{score}</b>" if score != "—" else "—"
-
-        data.append([
-            Paragraph(name, styles['TableText']),
-            Paragraph(score_display, styles['TableText']),
-            Paragraph(notes if notes else "—", styles['TableText'])
-        ])
-
-    table = Table(data, colWidths=[2.3*inch, 0.8*inch, 3.9*inch])
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), HexColor('#2c5282')),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('ALIGN', (1, 1), (1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#e2e8f0')),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, HexColor('#f8fafc')]),
-        ('LEFTPADDING', (0, 0), (-1, -1), 6),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
-        ('TOPPADDING', (1, 1), (-1, -1), 6),
-        ('BOTTOMPADDING', (1, 1), (-1, -1), 6),
-    ]))
-    return table
-
-
-# (rest of the functions unchanged – metadata table, add_component_section, etc.)
-
-# ... [same as previous working version] ...
-
-# Full script continues below (only showing the corrected part above + rest unchanged)
-
-# I'll paste the complete corrected script to avoid any confusion:
-
-# COMPLETE FIXED SCRIPT (copy
-#!/usr/bin/env python3
-"""
-KSL AI Model Control Review → PDF Generator
-- Fixed title
-- Original risk scores
-- Total Risk Score per artifact
-- No syntax errors
-"""
-
-import json
-import sys
-from datetime import datetime
-
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-from reportlab.lib.colors import HexColor
-from reportlab.lib import colors
-from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
-    HRFlowable, PageBreak, KeepTogether
-)
+MAX_NOTES_IN_TABLE = 800
 
 
 def load_json(filepath: str) -> dict:
@@ -180,7 +40,6 @@ def create_styles():
         alignment=1,
         fontName='Helvetica-Bold'
     ))
-
     styles.add(ParagraphStyle(
         name='SectionHeader',
         parent=styles['Heading1'],
@@ -190,8 +49,6 @@ def create_styles():
         textColor=HexColor('#2c5282'),
         keepWithNext=True
     ))
-
-    # FIXED LINE
     styles.add(ParagraphStyle(
         name='ItemHeader',
         parent=styles['Heading2'],
@@ -201,14 +58,44 @@ def create_styles():
         textColor=HexColor('#3182ce'),
         keepWithNext=True
     ))
-
+    styles.add(ParagraphStyle(
+        name='AddendumBadge',
+        parent=styles['Normal'],
+        fontSize=9,
+        fontName='Helvetica-Bold',
+        textColor=HexColor('#1d4ed8'),
+        spaceBefore=4,
+        spaceAfter=4,
+        leftIndent=4,
+    ))
     styles.add(ParagraphStyle(
         name='TableText',
         parent=styles['Normal'],
         fontSize=10,
         leading=12
     ))
-
+    styles.add(ParagraphStyle(
+        name='NotesExpanded',
+        parent=styles['Normal'],
+        fontSize=9,
+        leading=11,
+        leftIndent=20,
+        rightIndent=10,
+        spaceBefore=4,
+        spaceAfter=8,
+        backColor=HexColor('#f8fafc'),
+        borderPadding=5
+    ))
+    styles.add(ParagraphStyle(
+        name='NotesLabel',
+        parent=styles['Normal'],
+        fontSize=9,
+        fontName='Helvetica-BoldOblique',
+        textColor=HexColor('#4a5568'),
+        leftIndent=10,
+        spaceBefore=6,
+        spaceAfter=2
+    ))
     styles.add(ParagraphStyle(
         name='TotalRisk',
         parent=styles['Normal'],
@@ -219,105 +106,591 @@ def create_styles():
         spaceAfter=15,
         leftIndent=5
     ))
+    styles.add(ParagraphStyle(
+        name='SummarySubHeader',
+        parent=styles['Heading2'],
+        fontSize=12,
+        spaceBefore=18,
+        spaceAfter=6,
+        textColor=HexColor('#744210'),
+        keepWithNext=True,
+    ))
 
     return styles
 
 
-def calculate_total_risk(checks: list) -> int:
+def format_text_with_breaks(text: str) -> str:
+    if not text:
+        return ""
+    return text.strip().replace('\n', '<br/>')
+
+
+def calculate_total_risk(checks) -> int:
     total = 0
-    for check in checks:
-        score = check.get("score")
-        if isinstance(score, (int, float)):
-            total += int(score)
+    if isinstance(checks, dict):
+        for check_data in checks.values():
+            score = check_data.get("score")
+            if isinstance(score, (int, float)):
+                total += int(score)
+    elif isinstance(checks, list):
+        for check in checks:
+            score = check.get("score")
+            if isinstance(score, (int, float)):
+                total += int(score)
     return total
 
 
-def create_check_table(checks: list, styles) -> Table:
-    data = [["Check", "Risk Score", "Notes"]]
+def get_highest_score_in_items(items: list) -> int:
+    max_score = 0
+    for item in items:
+        checks = item.get("checks", [])
+        if isinstance(checks, dict):
+            for check_data in checks.values():
+                score = check_data.get("score")
+                if isinstance(score, (int, float)):
+                    max_score = max(max_score, int(score))
+        elif isinstance(checks, list):
+            for check in checks:
+                score = check.get("score")
+                if isinstance(score, (int, float)):
+                    max_score = max(max_score, int(score))
+    return max_score
 
-    for check in checks:
+
+def get_risk_category(score: int) -> str:
+    return {1: "No Risk", 2: "Low Risk", 3: "Medium Risk",
+            4: "High Risk", 5: "Critical Risk"}.get(score, "Unknown")
+
+
+def get_risk_color(score: int) -> HexColor:
+    return {
+        1: HexColor('#10b981'),
+        2: HexColor('#fbbf24'),
+        3: HexColor('#f97316'),
+        4: HexColor('#ef4444'),
+        5: HexColor('#dc2626'),
+    }.get(score, HexColor('#6b7280'))
+
+
+def calculate_section_total_score(items: list) -> int:
+    """Max-per-check-position then sum — matches the app rubric."""
+    if not items:
+        return 0
+    check_max = {}
+    for item in items:
+        checks = item.get("checks", [])
+        if isinstance(checks, dict):
+            for name, cd in checks.items():
+                s = cd.get("score")
+                if isinstance(s, (int, float)):
+                    check_max[name] = max(check_max.get(name, 0), int(s))
+        elif isinstance(checks, list):
+            for c in checks:
+                name = c.get("name", "")
+                s = c.get("score")
+                if isinstance(s, (int, float)):
+                    check_max[name] = max(check_max.get(name, 0), int(s))
+    return sum(check_max.values())
+
+
+SECTION_KEYS = {
+    'Third-Party Software': 'third_party_software',
+    'Source Code':          'source_code',
+    'Datasets / User Files': 'datasets_user_files',
+    'AI Models':            'models',
+}
+
+def get_addendum_artifacts_for_section(data: dict, section_key: str) -> list:
+    """Return list of (add_n, date, art_idx, artifact) 4-tuples for a section.
+    art_idx is the 0-based position within that addendum's artifact list."""
+    result = []
+    for idx, add in enumerate(data.get('addenda', [])):
+        if add.get('category') == section_key:
+            for art_idx, artifact in enumerate(add.get('artifacts', [])):
+                result.append((idx + 1, add.get('date', '—'), art_idx, artifact))
+    return result
+
+
+def _build_section_info_entry_anchored(items_with_anchors: list) -> dict:
+    """Like _build_section_info_entry but accepts (anchor_id, item) pairs and
+    returns artifact_links: [{'name': str, 'anchor': str}] instead of plain names."""
+    if not items_with_anchors:
+        return {'total': 0, 'highest': 0, 'category': 'No Data',
+                'count': 0, 'pass_fail': 'N/A', 'artifact_links': []}
+    items = [item for _, item in items_with_anchors]
+    total   = calculate_section_total_score(items)
+    highest = get_highest_score_in_items(items)
+    links = []
+    for anchor_id, item in items_with_anchors:
+        if get_highest_score_in_items([item]) == highest:
+            name = item.get("name", "Unnamed").strip() or "Unnamed"
+            links.append({'name': name, 'anchor': anchor_id})
+    return {
+        'total': total,
+        'highest': highest,
+        'category': get_risk_category(highest),
+        'count': len(items),
+        'pass_fail': 'FAIL' if total >= 21 else 'PASS',
+        'artifact_links': links,
+    }
+
+
+def calculate_section_totals_anchored(data: dict) -> dict:
+    """Original artifacts only, with anchor IDs for the summary table."""
+    result = {}
+    for display, key in SECTION_KEYS.items():
+        pairs = [(f"orig_{key}_{i}", item)
+                 for i, item in enumerate(data.get(key, []))]
+        result[display] = _build_section_info_entry_anchored(pairs)
+    return result
+
+
+def calculate_merged_section_totals_anchored(data: dict) -> dict:
+    """Original + addendum artifacts merged per section, with anchor IDs."""
+    result = {}
+    for display, key in SECTION_KEYS.items():
+        pairs = [(f"orig_{key}_{i}", item)
+                 for i, item in enumerate(data.get(key, []))]
+        for add_idx, add in enumerate(data.get('addenda', [])):
+            if add.get('category') == key:
+                add_n = add_idx + 1
+                for art_idx, artifact in enumerate(add.get('artifacts', [])):
+                    pairs.append((f"add_{add_n}_{key}_{art_idx}", artifact))
+        result[display] = _build_section_info_entry_anchored(pairs)
+    return result
+
+
+def create_check_elements(checks, styles, header_color=None) -> list:
+    elements = []
+    table_data = [["Check", "Risk Score", "Notes"]]
+    expanded_notes = []
+
+    check_list = []
+    if isinstance(checks, dict):
+        for name, cd in checks.items():
+            check_list.append({"name": name, "score": cd.get("score"), "notes": cd.get("notes", "")})
+    elif isinstance(checks, list):
+        check_list = checks
+
+    for check in check_list:
         name = check.get("name", "—")
         score = check.get("score", "—")
-        notes = (check.get("notes") or "").strip().replace('\n', '<br/>')
+        notes_raw = (check.get("notes") or "").strip()
+        notes_html = format_text_with_breaks(notes_raw)
         score_display = f"<b>{score}</b>" if score != "—" else "—"
 
-        data.append([
-            Paragraph(name, styles['TableText']),
-            Paragraph(score_display, styles['TableText']),
-            Paragraph(notes if notes else "—", styles['TableText'])
-        ])
+        if len(notes_raw) > MAX_NOTES_IN_TABLE:
+            table_data.append([
+                Paragraph(name, styles['TableText']),
+                Paragraph(score_display, styles['TableText']),
+                Paragraph("<i>See details below ↓</i>", styles['TableText'])
+            ])
+            expanded_notes.append((name, notes_html))
+        else:
+            table_data.append([
+                Paragraph(name, styles['TableText']),
+                Paragraph(score_display, styles['TableText']),
+                Paragraph(notes_html or "—", styles['TableText'])
+            ])
 
-    table = Table(data, colWidths=[2.3*inch, 0.8*inch, 3.9*inch])
+    hdr = header_color or HexColor('#2c5282')
+    table = Table(table_data, colWidths=[2.3*inch, 0.8*inch, 3.9*inch])
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), HexColor('#2c5282')),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('ALIGN', (1, 1), (1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#e2e8f0')),
+        ('BACKGROUND',   (0, 0), (-1, 0), hdr),
+        ('TEXTCOLOR',    (0, 0), (-1, 0), colors.white),
+        ('ALIGN',        (0, 0), (-1, -1), 'LEFT'),
+        ('ALIGN',        (1, 1), (1, -1), 'CENTER'),
+        ('FONTNAME',     (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE',     (0, 0), (-1, -1), 10),
+        ('GRID',         (0, 0), (-1, -1), 0.5, HexColor('#e2e8f0')),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, HexColor('#f8fafc')]),
-        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('LEFTPADDING',  (0, 0), (-1, -1), 6),
         ('RIGHTPADDING', (0, 0), (-1, -1), 6),
-        ('TOPPADDING', (1, 1), (-1, -1), 6),
-        ('BOTTOMPADDING', (1, 1), (-1, -1), 6),
+        ('TOPPADDING',   (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING',(0, 0), (-1, -1), 6),
+        ('VALIGN',       (0, 0), (-1, -1), 'TOP'),
     ]))
-    return table
+    elements.append(table)
+
+    if expanded_notes:
+        elements.append(Spacer(1, 10))
+        for check_name, notes_html in expanded_notes:
+            elements.append(Paragraph(f"► {check_name}:", styles['NotesLabel']))
+            elements.append(Paragraph(notes_html, styles['NotesExpanded']))
+
+    return elements
 
 
 def create_metadata_table(metadata: dict, styles) -> Table:
     fields = {
-        'proposal_title': 'Proposal Title',
+        'proposal_title':         'Proposal Title',
         'principal_investigator': 'Principal Investigator',
-        'proposal_date': 'Proposal Date',
-        'reviewer_name': 'Reviewer Name',
-        'reviewer_id': 'Reviewer ID',
-        'aimcr_date': 'AIMCR Date',
-        'project_id': 'Project ID'
+        'proposal_date':          'Proposal Date',
+        'reviewer_name':          'Reviewer Name',
+        'reviewer_id':            'Reviewer ID',
+        'aimcr_date':             'AIMCR Date',
+        'project_id':             'Project ID',
     }
-
-    data = []
-    for key, label in fields.items():
-        value = metadata.get(key, 'N/A')
-        data.append([
-            Paragraph(f"<b>{label}:</b>", styles['TableText']),
-            Paragraph(str(value), styles['TableText'])
-        ])
-
+    data = [
+        [Paragraph(f"<b>{label}:</b>", styles['TableText']),
+         Paragraph(str(metadata.get(key, 'N/A')), styles['TableText'])]
+        for key, label in fields.items()
+    ]
     table = Table(data, colWidths=[2.4*inch, 4.3*inch])
     table.setStyle(TableStyle([
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#cbd5e0')),
-        ('BACKGROUND', (0, 0), (-1, -1), HexColor('#edf2f7')),
-        ('LEFTPADDING', (0, 0), (-1, -1), 6),
-        ('TOPPADDING', (0, 0), (-1, -1), 6),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('VALIGN',       (0, 0), (-1, -1), 'TOP'),
+        ('GRID',         (0, 0), (-1, -1), 0.5, HexColor('#cbd5e0')),
+        ('BACKGROUND',   (0, 0), (-1, -1), HexColor('#edf2f7')),
+        ('LEFTPADDING',  (0, 0), (-1, -1), 6),
+        ('TOPPADDING',   (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING',(0, 0), (-1, -1), 6),
     ]))
     return table
 
 
-def add_component_section(story, title: str, items: list, styles):
+def add_component_section(story, title: str, items: list, styles,
+                           is_models_section: bool = False,
+                           addendum_artifacts: list = None,
+                           section_key: str = ""):
+    """
+    Render a section.  Original artifacts first (white rows, with named anchors),
+    then addendum artifacts (blue-bordered with date badge, also anchored).
+    Anchor IDs: orig_{section_key}_{0-based idx}  /  add_{add_n}_{section_key}_{art_idx}
+    """
     story.append(Paragraph(title, styles['SectionHeader']))
 
-    if not items:
+    if not items and not addendum_artifacts:
         story.append(Paragraph("No items in this category.", styles['TableText']))
         story.append(Spacer(1, 20))
         return
 
-    for idx, item in enumerate(items, 1):
-        name = item.get("name", "").strip() or "(Unnamed component)"
-        story.append(Paragraph(f"{idx}. {name}", styles['ItemHeader']))
+    # ── Original artifacts ────────────────────────────────────────────────────
+    for idx, item in enumerate(items):
+        name    = item.get("name", "").strip() or "(Unnamed component)"
+        anchor  = f'<a name="orig_{section_key}_{idx}"/>'
+        display = idx + 1
+        if is_models_section and item.get('is_proprietary', False):
+            story.append(Paragraph(
+                f'{anchor}{display}. {name} \U0001F512 <i>(Marked as Proprietary)</i>',
+                styles['ItemHeader']
+            ))
+        else:
+            story.append(Paragraph(f'{anchor}{display}. {name}', styles['ItemHeader']))
+
+        if is_models_section:
+            prop = "Yes" if item.get('is_proprietary', False) else "No"
+            story.append(Paragraph(f"<b>Marked as Proprietary in Proposal:</b> {prop}", styles['TableText']))
+            story.append(Spacer(1, 8))
 
         checks = item.get("checks", [])
         if checks:
-            story.append(KeepTogether(create_check_table(checks, styles)))
-            total = calculate_total_risk(checks)
-            story.append(Paragraph(f"Total Risk Score: {total}", styles['TotalRisk']))
+            story.extend(create_check_elements(checks, styles))
+            story.append(Paragraph(f"Total Risk Score: {calculate_total_risk(checks)}", styles['TotalRisk']))
         else:
             story.append(Paragraph("No checks recorded.", styles['TableText']))
-
         story.append(Spacer(1, 25))
 
+    # ── Addendum artifacts (inline, blue-bordered) ────────────────────────────
+    if addendum_artifacts:
+        story.append(Paragraph("📎 Addendum Artifacts", styles['SectionHeader']))
+
+        for add_n, add_date, art_idx, item in addendum_artifacts:
+            name   = item.get("name", "").strip() or "(Unnamed component)"
+            anchor = f'<a name="add_{add_n}_{section_key}_{art_idx}"/>'
+
+            badge_data = [[
+                Paragraph(
+                    f"{anchor}<b>Addendum {add_n} — Added: {add_date}</b> &nbsp;&nbsp; {name}",
+                    styles['AddendumBadge']
+                )
+            ]]
+            badge_table = Table(badge_data, colWidths=[7*inch])
+            badge_table.setStyle(TableStyle([
+                ('BACKGROUND',    (0, 0), (-1, -1), HexColor('#eff6ff')),
+                ('LINEBEFORE',    (0, 0), (0, -1), 5, HexColor('#3b82f6')),
+                ('LEFTPADDING',   (0, 0), (-1, -1), 10),
+                ('RIGHTPADDING',  (0, 0), (-1, -1), 10),
+                ('TOPPADDING',    (0, 0), (-1, -1), 6),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ]))
+            story.append(badge_table)
+            story.append(Spacer(1, 4))
+
+            if is_models_section:
+                prop = "Yes" if item.get('is_proprietary', False) else "No"
+                story.append(Paragraph(f"<b>Marked as Proprietary in Proposal:</b> {prop}", styles['TableText']))
+                story.append(Spacer(1, 4))
+
+            checks = item.get("checks", [])
+            if checks:
+                story.extend(create_check_elements(checks, styles, header_color=HexColor('#1d4ed8')))
+                story.append(Paragraph(f"Total Risk Score: {calculate_total_risk(checks)}", styles['TotalRisk']))
+            else:
+                story.append(Paragraph("No checks recorded.", styles['TableText']))
+            story.append(Spacer(1, 18))
+
+
+def create_risk_summary_table(section_info: dict, styles, header_label: str = "Risk Score Summary") -> list:
+    """Single risk table (used for both original-only and per-addendum tables)."""
+    elements = []
+    table_data = [["Section", "Max Score", "Risk Category", "Status", "Items", "Artifacts"]]
+
+    for section_name, info in section_info.items():
+        if info['count'] > 0:
+            rc = get_risk_color(info['highest'])
+            cat_text = f"<font color='{rc.hexval()}'><b>{info['category']}</b></font>"
+            score_text = f"<font color='{rc.hexval()}'><b>{info['highest']}</b></font>"
+            pf_color = '#10b981' if info['pass_fail'] == 'PASS' else '#dc2626'
+            pf_text = f"<font color='{pf_color}'><b>{info['pass_fail']}</b></font>"
+            links = info.get('artifact_links', [])
+            arts = info.get('artifacts', [])
+            if links:
+                arts_text = "<br/>".join(
+                    f'<a href="#{l["anchor"]}" color="#1d4ed8">• {l["name"]}</a>' for l in links
+                )
+            elif arts:
+                arts_text = arts[0] if len(arts) == 1 else "<br/>".join(f"• {a}" for a in arts)
+            else:
+                arts_text = "—"
+            table_data.append([
+                Paragraph(section_name, styles['TableText']),
+                Paragraph(score_text, styles['TableText']),
+                Paragraph(cat_text, styles['TableText']),
+                Paragraph(pf_text, styles['TableText']),
+                Paragraph(str(info['count']), styles['TableText']),
+                Paragraph(arts_text, styles['TableText']),
+            ])
+        else:
+            table_data.append([
+                Paragraph(section_name, styles['TableText']),
+                Paragraph("—", styles['TableText']),
+                Paragraph("<i>No Data</i>", styles['TableText']),
+                Paragraph("—", styles['TableText']),
+                Paragraph("0", styles['TableText']),
+                Paragraph("—", styles['TableText']),
+            ])
+
+    table = Table(table_data, colWidths=[1.5*inch, 0.9*inch, 1.2*inch, 0.7*inch, 0.5*inch, 2.2*inch])
+    table.setStyle(TableStyle([
+        ('BACKGROUND',   (0, 0), (-1, 0), HexColor('#2c5282')),
+        ('TEXTCOLOR',    (0, 0), (-1, 0), colors.white),
+        ('ALIGN',        (0, 0), (-1, -1), 'LEFT'),
+        ('ALIGN',        (1, 0), (1, -1), 'CENTER'),
+        ('ALIGN',        (3, 0), (3, -1), 'CENTER'),
+        ('ALIGN',        (4, 0), (4, -1), 'CENTER'),
+        ('FONTNAME',     (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE',     (0, 0), (-1, -1), 10),
+        ('GRID',         (0, 0), (-1, -1), 0.5, HexColor('#e2e8f0')),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, HexColor('#f8fafc')]),
+        ('LEFTPADDING',  (0, 0), (-1, -1), 8),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING',   (0, 0), (-1, -1), 8),
+        ('BOTTOMPADDING',(0, 0), (-1, -1), 8),
+        ('VALIGN',       (0, 0), (-1, -1), 'TOP'),
+    ]))
+    elements.append(table)
+    return elements
+
+
+def create_maximum_risk_box(section_info: dict, styles,
+                             label: str = "MAXIMUM RISK LEVEL",
+                             subtitle: str = "Highest risk across all sections",
+                             box_bg: str = '#f8fafc',
+                             box_border_override: HexColor = None) -> list:
+    """Render a centred risk-level box (previously called cumulative risk box)."""
+    elements = []
+    scores = [info['highest'] for info in section_info.values() if info.get('highest', 0) > 0]
+    max_score = max(scores, default=0)
+    if max_score == 0:
+        elements.append(Paragraph("<i>No risk data available</i>", styles['TableText']))
+        return elements
+
+    category = get_risk_category(max_score)
+    risk_color = box_border_override or get_risk_color(max_score)
+    any_failed = any(i.get('pass_fail') == 'FAIL' for i in section_info.values() if i.get('pass_fail') != 'N/A')
+    pass_fail = "FAIL" if any_failed else "PASS"
+    pf_color = '#dc2626' if any_failed else '#10b981'
+
+    box_data = [[Paragraph(
+        f"<para align=center>"
+        f"<b><font size=13>{label}</font></b><br/><br/>"
+        f"<font size=34 color='{get_risk_color(max_score).hexval()}'><b>{max_score}</b></font><br/>"
+        f"<font size=15 color='{get_risk_color(max_score).hexval()}'><b>{category}</b></font><br/>"
+        f"<font size=16 color='{pf_color}'><b>{pass_fail}</b></font><br/><br/>"
+        f"<font size=9 color='#718096'><i>{subtitle}</i></font>"
+        f"</para>",
+        styles['TableText']
+    )]]
+    box_table = Table(box_data, colWidths=[3.0*inch])
+    box_table.setStyle(TableStyle([
+        ('BACKGROUND',    (0, 0), (-1, -1), HexColor(box_bg)),
+        ('BOX',           (0, 0), (-1, -1), 3, risk_color),
+        ('LEFTPADDING',   (0, 0), (-1, -1), 16),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 16),
+        ('TOPPADDING',    (0, 0), (-1, -1), 16),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 16),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    elements.append(box_table)
+    return elements
+
+
+def create_dual_maximum_risk_boxes(orig_info: dict, updated_info: dict, styles) -> list:
+    """Two risk boxes side by side: Original | Updated (incl. Addenda)."""
+    orig_elements   = create_maximum_risk_box(
+        orig_info, styles,
+        label="ORIGINAL MAXIMUM RISK",
+        subtitle="Original submission artifacts"
+    )
+    updated_elements = create_maximum_risk_box(
+        updated_info, styles,
+        label="UPDATED MAXIMUM RISK",
+        subtitle="Incl. all addenda",
+        box_bg='#eff6ff',
+        box_border_override=HexColor('#3b82f6')
+    )
+
+    # Place the two boxes in a two-cell table for side-by-side layout
+    row = [[orig_elements[0], updated_elements[0]]]
+    dual_table = Table(row, colWidths=[3.25*inch, 3.25*inch], hAlign='CENTER')
+    dual_table.setStyle(TableStyle([
+        ('VALIGN',       (0, 0), (-1, -1), 'TOP'),
+        ('LEFTPADDING',  (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING', (0, 0), (0, -1), 12),   # gap between boxes
+        ('RIGHTPADDING', (1, 0), (1, -1), 0),
+        ('TOPPADDING',   (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING',(0, 0), (-1, -1), 0),
+    ]))
+    return [dual_table]
+
+
+# ── Addendum pages (at end of document) ──────────────────────────────────────
+
+def create_addendum_header_table(addendum_num: int, addendum: dict, styles) -> Table:
+    date_str  = addendum.get('date', '—')
+    cat_key   = addendum.get('category', '')
+    cat_label = ADDENDUM_CATEGORY_LABELS.get(cat_key, cat_key.replace('_', ' ').title())
+    n_arts    = len(addendum.get('artifacts', []))
+    art_word  = 'artifact' if n_arts == 1 else 'artifacts'
+
+    banner_data = [[
+        Paragraph(f"<b>ADDENDUM {addendum_num}</b>", styles['AddendumTitle']),
+        Paragraph(
+            f"<b>Date:</b> {date_str}<br/><b>Category:</b> {cat_label}<br/>{n_arts} {art_word}",
+            styles['AddendumMeta']
+        ),
+    ]]
+    banner = Table(banner_data, colWidths=[2.5*inch, 4.5*inch])
+    banner.setStyle(TableStyle([
+        ('BACKGROUND',    (0, 0), (-1, -1), HexColor('#92400e')),
+        ('LEFTPADDING',   (0, 0), (-1, -1), 16),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 16),
+        ('TOPPADDING',    (0, 0), (-1, -1), 14),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 14),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+        ('LINEBELOW',     (0, 0), (-1, -1), 3, HexColor('#f59e0b')),
+    ]))
+    return banner
+
+
+def _group_addenda_by_date(addenda: list) -> list:
+    """Group addenda that share a date together so the date isn't repeated.
+    Returns [(date, [addenda...]), ...] sorted chronologically; addenda with
+    a missing/placeholder date are grouped last."""
+    groups: dict = {}
+    for addendum in addenda:
+        date = addendum.get('date') or '—'
+        groups.setdefault(date, []).append(addendum)
+    return sorted(groups.items(), key=lambda kv: (kv[0] == '—', kv[0]))
+
+
+def _append_dated_trail(story, original_text: str, addenda: list, field_name: str,
+                         styles, empty_label: str) -> None:
+    """Original text, followed by one entry per unique addendum date —
+    addenda sharing a date are consolidated under that single date heading,
+    and dates are listed chronologically. Used identically for Observations
+    and Recommendation in the Summary."""
+    original = format_text_with_breaks(original_text) or empty_label
+    story.append(Paragraph(original, styles['TableText']))
+
+    for date, group in _group_addenda_by_date(addenda):
+        texts = []
+        for addendum in group:
+            text = format_text_with_breaks(addendum.get(field_name, '')).strip()
+            if text:
+                texts.append(text)
+        combined = "<br/>".join(texts) if texts else empty_label
+        story.append(Spacer(1, 8))
+        story.append(Paragraph(f"<b>{date}:</b> {combined}", styles['TableText']))
+
+
+def build_summary_section(story: list, data: dict, styles) -> None:
+    """Final page of the report: overall risk score, then the full
+    observation/recommendation trail (original + every addendum, dated)."""
+    addenda = data.get('addenda', [])
+    has_addenda = bool(addenda)
+
+    story.append(PageBreak())
+    story.append(Paragraph("Summary", styles['SectionHeader']))
+
+    # ── Overall Risk Score ────────────────────────────────────────────────
+    story.append(Paragraph("Overall Risk Score", styles['SummarySubHeader']))
+
+    orig_info = calculate_section_totals_anchored(data)
+
+    if has_addenda:
+        story.append(Paragraph(
+            "<b>Original Assessment</b>",
+            ParagraphStyle('SubLabel', parent=styles['TableText'],
+                           fontSize=11, spaceBefore=6, spaceAfter=4,
+                           textColor=HexColor('#2c5282'))
+        ))
+        story.extend(create_risk_summary_table(orig_info, styles))
+        story.append(Spacer(1, 14))
+
+        updated_info = calculate_merged_section_totals_anchored(data)
+        story.append(Paragraph(
+            "<b>Updated Assessment (incl. Addenda)</b>",
+            ParagraphStyle('SubLabel2', parent=styles['TableText'],
+                           fontSize=11, spaceBefore=6, spaceAfter=4,
+                           textColor=HexColor('#1d4ed8'))
+        ))
+        story.extend(create_risk_summary_table(updated_info, styles))
+        story.append(Spacer(1, 20))
+
+        story.extend(create_dual_maximum_risk_boxes(orig_info, updated_info, styles))
+    else:
+        story.extend(create_risk_summary_table(orig_info, styles))
+        story.append(Spacer(1, 20))
+        story.extend(create_maximum_risk_box(orig_info, styles))
+
+    story.append(Spacer(1, 30))
+
+    # ── Observations ──────────────────────────────────────────────────────
+    story.append(Paragraph("Observations", styles['SummarySubHeader']))
+    _append_dated_trail(
+        story, data.get("observations", ""), addenda, "observations",
+        styles, "<i>None recorded.</i>"
+    )
+    story.append(Spacer(1, 20))
+
+    # ── Recommendation ────────────────────────────────────────────────────
+    story.append(Paragraph("Recommendation", styles['SummarySubHeader']))
+    _append_dated_trail(
+        story, data.get("recommendation", ""), addenda, "recommendation",
+        styles, "<i>Not provided.</i>"
+    )
+    story.append(Spacer(1, 40))
+
+    # ── Footer ─────────────────────────────────────────────────────────────
+    story.append(HRFlowable(width="100%", thickness=1, color=HexColor('#cbd5e0')))
+    story.append(Paragraph(
+        f"Report generated on {datetime.now():%Y-%m-%d %H:%M:%S}",
+        ParagraphStyle(name='Footer', alignment=1, fontSize=9, textColor=HexColor('#718096'))
+    ))
+
+
+# ── Main PDF builder ──────────────────────────────────────────────────────────
 
 def json_to_pdf(json_filepath: str, output_filepath: str = None) -> str:
     data = load_json(json_filepath)
@@ -333,39 +706,34 @@ def json_to_pdf(json_filepath: str, output_filepath: str = None) -> str:
     )
 
     styles = create_styles()
-    story = []
+    story  = []
+    addenda = data.get('addenda', [])
+    has_addenda = bool(addenda)
 
+    # ── Title & metadata ──────────────────────────────────────────────────────
     story.append(Paragraph("KSL AI Model Control Review", styles['DocTitle']))
     story.append(HRFlowable(width="100%", thickness=4, color=HexColor('#2c5282'), spaceAfter=30))
-
     story.append(Paragraph("Review Information", styles['SectionHeader']))
     story.append(create_metadata_table(data.get("metadata", {}), styles))
     story.append(Spacer(1, 30))
-
-    add_component_section(story, "Third-Party Software", data.get("third_party_software", []), styles)
     story.append(PageBreak())
 
-    add_component_section(story, "Source Code", data.get("source_code", []), styles)
-    story.append(PageBreak())
+    # ── Artifact sections (original + inline addenda) ─────────────────────────
+    for section_title, section_key in SECTION_KEYS.items():
+        add_arts = get_addendum_artifacts_for_section(data, section_key) if has_addenda else []
+        add_component_section(
+            story,
+            title=section_title,
+            items=data.get(section_key, []),
+            styles=styles,
+            is_models_section=(section_key == 'models'),
+            addendum_artifacts=add_arts if add_arts else None,
+            section_key=section_key,
+        )
+        story.append(PageBreak())
 
-    add_component_section(story, "Datasets / User Files", data.get("datasets_user_files", []), styles)
-    story.append(PageBreak())
-
-    add_component_section(story, "AI Models", data.get("models", []), styles)
-
-    story.append(Paragraph("General Observations", styles['SectionHeader']))
-    story.append(Paragraph(data.get("observations", "").strip() or "None recorded.", styles['TableText']))
-    story.append(Spacer(1, 20))
-
-    story.append(Paragraph("Final Recommendation", styles['SectionHeader']))
-    story.append(Paragraph(data.get("recommendation", "").strip() or "Not provided.", styles['TableText']))
-
-    story.append(Spacer(1, 40))
-    story.append(HRFlowable(width="100%", thickness=1, color=HexColor('#cbd5e0')))
-    story.append(Paragraph(
-        f"Report generated on {datetime.now():%Y-%m-%d %H:%M:%S}",
-        ParagraphStyle(name='Footer', alignment=1, fontSize=9, textColor=HexColor('#718096'))
-    ))
+    # ── Summary (overall risk score + full observation/recommendation trail) ──
+    build_summary_section(story, data, styles)
 
     doc.build(story)
     return output_filepath
@@ -373,12 +741,10 @@ def json_to_pdf(json_filepath: str, output_filepath: str = None) -> str:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python json_to_pdf.py <input.json> [output.pdf]")
+        print("Usage: python json_to_pdf_v2.py <input.json> [output.pdf]")
         sys.exit(1)
-
-    input_file = sys.argv[1]
+    input_file  = sys.argv[1]
     output_file = sys.argv[2] if len(sys.argv) > 2 else None
-
     try:
         result = json_to_pdf(input_file, output_file)
         print(f"PDF created: {result}")
